@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quy Trình Thiết Lập Dự Án Mẫu (GitHub + Vercel + Google)</title>
+    <!-- Tải Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        pre {
+            background-color: #1f2937; /* Gray-800 */
+            color: #f9fafb; /* White */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-size: 0.875rem; /* text-sm */
+            margin-top: 0.5rem;
+        }
+        /* Đảm bảo các slide không bị co lại khi hiển thị ngang hàng */
+        .slide-item {
+            flex: 0 0 100%; /* Không co lại, chiếm đúng 100% chiều rộng container */
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div id="app" class="max-w-4xl mx-auto">
+        <header class="text-center mb-8 bg-white p-6 rounded-xl shadow-lg">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                Hành Trình Triển Khai App Hiện Đại
+            </h1>
+            <p class="text-xl text-indigo-600 font-semibold">
+                GitHub ➔ Vercel ➔ Google (Firebase)
+            </p>
+            <p class="text-sm text-gray-500 mt-2">
+                Hoàn thành các bước dưới đây. Tiến trình và dữ liệu được lưu tự động trên trình duyệt này.
+            </p>
+        </header>
+
+        <div id="project-data-display" class="mb-8 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-sm text-gray-700 rounded-lg hidden">
+            <p class="font-bold mb-1 text-yellow-700">Dữ liệu Dự án Đã Ghi nhận:</p>
+            <ul id="data-list" class="list-disc list-inside space-y-0.5">
+                <!-- Data will be inserted here -->
+            </ul>
+        </div>
+
+        <!-- Carousel / Slideshow Structure -->
+        <div id="carousel-wrapper" class="relative">
+            <!-- Slide Window: Giữ nội dung trượt ngang -->
+            <div id="slides-window" class="overflow-hidden rounded-2xl shadow-2xl bg-white">
+                <div id="slides-wrapper" class="flex transition-transform duration-500 ease-in-out">
+                    <!-- Steps/Phases will be rendered here as slides -->
+                </div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="flex justify-between mt-4">
+                <button id="prev-btn" onclick="navigateSlides(-1)" 
+                        class="px-6 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-400 transition duration-150 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    &larr; Phase Trước
+                </button>
+                <div id="phase-counter" class="text-lg font-bold text-indigo-600 self-center"></div>
+                <button id="next-btn" onclick="navigateSlides(1)" 
+                        class="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Phase Tiếp &rarr;
+                </button>
+            </div>
+        </div>
+        <!-- End Carousel Structure -->
+
+        <footer class="text-center mt-10 text-gray-500 text-xs">
+            Phiên bản hướng dẫn: Mẫu App Next.js/React.
+        </footer>
+    </div>
+
+    <script>
+        // Khai báo biến toàn cục để lưu trữ dữ liệu dự án
+        let projectData = {};
+        const PROJECT_DATA_KEY = 'project_setup_data';
+        const TASK_STATE_KEY = 'project_setup_task_state';
+        let currentPhaseIndex = 0; // State mới: Theo dõi slide/phase hiện tại
+
+        // Dữ liệu các bước hướng dẫn
+        const stepsData = [
+            {
+                id: 'accounts',
+                title: 'Phase 1: Chuẩn bị Tài khoản Cơ bản',
+                color: 'bg-indigo-500',
+                tasks: [
+                    // Đã thêm input để ghi nhận tên tài khoản
+                    { id: 't1_github', text: 'Tạo tài khoản GitHub (hoặc đăng nhập).', isInputRequired: true, inputId: 'githubUsername', inputPlaceholder: 'Nhập Tên người dùng GitHub của bạn' },
+                    { id: 't2_vercel', text: 'Tạo tài khoản Vercel (nên đăng ký bằng GitHub).', isInputRequired: true, inputId: 'vercelUsername', inputPlaceholder: 'Nhập Tên team/người dùng Vercel' },
+                    { id: 't3_google_acc', text: 'Đảm bảo có tài khoản Google để dùng Firebase.', isInputRequired: true, inputId: 'googleEmail', inputPlaceholder: 'Nhập Email Google/Firebase' }
+                ]
+            },
+            {
+                id: 'github_setup',
+                title: 'Phase 2: Thiết lập Dự án và GitHub',
+                color: 'bg-gray-700',
+                tasks: [
+                    { id: 't4_local_project', text: 'Khởi tạo dự án Next.js/React (ví dụ: npx create-next-app@latest).', isInputRequired: true, inputId: 'projectName', inputPlaceholder: 'Nhập Tên Dự án (ví dụ: sport-manager)' },
+                    { id: 't5_git_init', text: 'Khởi tạo Git trong thư mục dự án (git init).' },
+                    { id: 't6_first_commit', text: 'Thêm và commit code lần đầu (git add . && git commit -m "initial commit").' },
+                    { id: 't7_github_repo', text: 'Tạo một Repository mới trên GitHub.', isInputRequired: true, inputId: 'githubRepoUrl', inputPlaceholder: 'Dán URL Repo GitHub (ví dụ: https://github.com/user/project)' },
+                    { id: 't8_push', text: 'Liên kết và đẩy code lên GitHub (git remote add origin... && git push...).' }
+                ]
+            },
+            {
+                id: 'google_firebase',
+                title: 'Phase 3: Tích hợp Dịch vụ Google (Firebase)',
+                color: 'bg-yellow-600',
+                tasks: [
+                    { id: 't9_firebase_project', text: 'Tạo một dự án mới trong Firebase Console (đặt tên: ' + (projectData.projectName || 'Tên Dự án của bạn') + ').' },
+                    { id: 't10_web_app', text: 'Thêm một "Web app" vào dự án Firebase và sao chép cấu hình (firebaseConfig).', isInputRequired: true, inputId: 'firebaseApiKey', inputPlaceholder: 'Dán Firebase API Key (để dùng trong .env)' },
+                    { id: 't11_install_sdk', text: 'Cài đặt Firebase SDK vào dự án local (npm install firebase).' },
+                    { id: 't12_init_firebase', text: 'Tạo tệp cấu hình để khởi tạo Firebase trong code (sử dụng API Key đã lưu).', codeSnippet: 
+`// file: firebase-init.js (hoặc .ts)
+import { initializeApp } from "firebase/app";
+// Lấy các biến từ môi trường (Next.js/React)
+const firebaseConfig = {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY, // Sử dụng Key đã lưu
+    authDomain: "..."
+    // ...
+};
+export const app = initializeApp(firebaseConfig);
+` 
+                    },
+                    { id: 't13_auth', text: 'Trong Firebase: Bật phương thức đăng nhập Google (Authentication -> Sign-in method).' },
+                    { id: 't14_env_local', text: 'Tạo tệp .env.local và thêm các biến môi trường Firebase.', codeSnippet: 
+`# file: .env.local
+NEXT_PUBLIC_FIREBASE_API_KEY="[KEY_DÁN_TẠI_ĐÂY]"
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="..."
+# KHÔNG BAO GỒM TỆP NÀY KHI COMMIT LÊN GITHUB!`
+                    }
+                ]
+            },
+            {
+                id: 'database_schema',
+                title: 'Phase 4: Cấu trúc Database (Firestore) & Code Mẫu (App Hội thao)',
+                color: 'bg-green-600',
+                tasks: [
+                    { id: 't15_firestore_db', text: 'Tạo cơ sở dữ liệu Firestore trong Firebase Console (chọn mode "Production").' },
+                    { id: 't16_security_rules', text: 'Thiết lập Security Rules (chấp nhận read/write cho người dùng đã đăng nhập).', codeSnippet: 
+`// Ví dụ về Firestore Rules (CẦN TÙY CHỈNH THEO BẢO MẬT)
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Chỉ cho phép người dùng đã đăng nhập đọc/ghi
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}`
+                    },
+                    { 
+                        id: 't17_data_model', 
+                        text: 'Thiết lập mô hình dữ liệu cơ bản cho App Hội Thao (Collections: Events, Teams, Athletes).',
+                        codeSnippet: 
+`// Mô hình dữ liệu App Hội Thao:
+// 1. Collection: events (Sự kiện)
+//    - Document: event_id_1
+//      - name: "Giải bóng đá mùa xuân 2026"
+//      - date: "2026-03-01"
+//      - status: "Active"
+//
+// 2. Collection: teams (Đội)
+//    - Document: team_id_A
+//      - name: "Đội Kỹ thuật"
+//      - eventId: event_id_1
+//
+// 3. Collection: athletes (Vận động viên)
+//    - Document: athlete_id_X
+//      - name: "Nguyễn Văn A"
+//      - teamId: team_id_A
+//      - score: 0
+// `
+                    },
+                    { id: 't18_fetch_code', text: 'Viết mã mẫu để fetch dữ liệu Events từ Firestore.', codeSnippet: 
+`// Ví dụ Code JavaScript/React để đọc dữ liệu (cần import db từ firebase-init.js)
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "./firebase-init"; // Giả sử đã import
+
+async function getEvents() {
+  const eventsCol = collection(db, 'events');
+  const eventSnapshot = await getDocs(eventsCol);
+  const eventList = eventSnapshot.docs.map(doc => ({ 
+    id: doc.id, 
+    ...doc.data() 
+  }));
+  console.log(eventList);
+  return eventList;
+}`
+                    }
+                ]
+            },
+            {
+                id: 'vercel_deploy',
+                title: 'Phase 5: Triển khai Tự động với Vercel',
+                color: 'bg-black',
+                tasks: [
+                    { id: 't19_vercel_import', text: 'Đăng nhập Vercel và chọn "Add New Project", sau đó Import Repository từ GitHub (' + (projectData.githubRepoUrl || 'URL Repo đã lưu') + ').', isInputRequired: true, inputId: 'vercelProjectUrl', inputPlaceholder: 'Dán URL Project Vercel (ví dụ: https://my-app.vercel.app)' },
+                    { id: 't20_env_vercel', text: 'Quan trọng: Dán tất cả các biến môi trường (NEXT_PUBLIC_...) vào Cấu hình Biến môi trường trên Vercel.' },
+                    { id: 't21_deploy_first', text: 'Nhấn Deploy và chờ đợi lần triển khai đầu tiên thành công.' },
+                    { id: 't22_test_cd', text: 'Kiểm tra Continuous Deployment: Thực hiện một thay đổi nhỏ, commit và push lên GitHub. Xem Vercel tự động build và deploy lại.' }
+                ]
+            },
+        ];
+
+        // --- Logic lưu trữ và cập nhật trạng thái ---
+
+        // Tải dữ liệu Dự án và Trạng thái nhiệm vụ
+        function loadState() {
+            try {
+                const data = localStorage.getItem(PROJECT_DATA_KEY);
+                projectData = data ? JSON.parse(data) : {};
+            } catch (e) {
+                console.error("Error loading project data:", e);
+                projectData = {};
+            }
+        }
+        
+        // Lưu dữ liệu Dự án
+        function saveProjectData() {
+            localStorage.setItem(PROJECT_DATA_KEY, JSON.stringify(projectData));
+            updateProjectDataDisplay();
+        }
+
+        // Lưu trạng thái nhiệm vụ
+        function saveTaskState(taskId, state) {
+            let taskStates = JSON.parse(localStorage.getItem(TASK_STATE_KEY) || '{}');
+            taskStates[taskId] = state ? 'completed' : 'pending';
+            localStorage.setItem(TASK_STATE_KEY, JSON.stringify(taskStates));
+        }
+
+        // Tải trạng thái nhiệm vụ
+        function loadTaskState(taskId) {
+            let taskStates = JSON.parse(localStorage.getItem(TASK_STATE_KEY) || '{}');
+            return taskStates[taskId] === 'completed';
+        }
+
+        // Cập nhật hiển thị dữ liệu đã lưu
+        function updateProjectDataDisplay() {
+            const dataList = document.getElementById('data-list');
+            const dataDisplay = document.getElementById('project-data-display');
+            dataList.innerHTML = '';
+            let hasData = false;
+
+            for (const [key, value] of Object.entries(projectData)) {
+                if (value) {
+                    const li = document.createElement('li');
+                    // Hiển thị tên biến thân thiện hơn
+                    const displayKey = key.replace(/([A-Z])/g, ' $1').toUpperCase();
+                    li.innerHTML = `<span class="font-medium">${displayKey}:</span> <code class="bg-yellow-200 px-1 rounded">${value}</code>`;
+                    dataList.appendChild(li);
+                    hasData = true;
+                }
+            }
+
+            if (hasData) {
+                dataDisplay.classList.remove('hidden');
+            } else {
+                dataDisplay.classList.add('hidden');
+            }
+        }
+        
+        // Xử lý khi checkbox thay đổi hoặc input thay đổi
+        function toggleTask(taskId) {
+            const checkbox = document.getElementById(`check-${taskId}`);
+            const label = document.querySelector(`label[for="check-${taskId}"]`);
+            const isChecked = checkbox.checked;
+
+            saveTaskState(taskId, isChecked);
+
+            if (isChecked) {
+                label.classList.add('line-through', 'text-gray-400');
+                label.classList.remove('text-gray-700');
+            } else {
+                label.classList.remove('line-through', 'text-gray-400');
+                label.classList.add('text-gray-700');
+            }
+            
+            // Cập nhật thanh tiến trình
+            updateProgressBar();
+        }
+
+        function handleInput(inputId, value) {
+            projectData[inputId] = value;
+            saveProjectData();
+            
+            // Re-render only the current slide to show the new 'Đã ghi nhận' badge and input style
+            updateSlideContent(currentPhaseIndex); 
+            
+            // --- NƠI ĐỂ THỰC HIỆN KIỂM TRA XÁC NHẬN TÀI KHOẢN THỰC TẾ ---
+            // -----------------------------------------------------------------
+        }
+
+        // Hàm sao chép code vào clipboard
+        function copyCode(taskId, buttonElement) {
+            const codeContainer = document.getElementById(`code-snippet-${taskId}`);
+            if (!codeContainer) return;
+
+            // Dùng một textarea tạm thời để chọn và sao chép nội dung
+            const tempTextarea = document.createElement('textarea');
+            // Dùng textContent.trim() để lấy code, bỏ qua các khoảng trắng thừa
+            tempTextarea.value = codeContainer.textContent.trim(); 
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+
+            let success = false;
+            try {
+                // Thực thi lệnh copy (phương thức đáng tin cậy trong môi trường iframe)
+                success = document.execCommand('copy');
+            } catch (err) {
+                console.error('Copy failed:', err);
+            }
+
+            document.body.removeChild(tempTextarea);
+
+            // Cập nhật trạng thái nút
+            if (success) {
+                const originalText = buttonElement.textContent;
+                // Lưu lại các class cần phục hồi
+                const originalClasses = Array.from(buttonElement.classList);
+
+                // Hiển thị trạng thái thành công
+                buttonElement.textContent = 'Đã sao chép!';
+                buttonElement.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+                buttonElement.classList.add('bg-green-600');
+                
+                setTimeout(() => {
+                    // Phục hồi trạng thái ban đầu
+                    buttonElement.textContent = originalText;
+                    buttonElement.className = originalClasses.join(' ');
+                }, 2000);
+            } else {
+                // Xử lý khi copy thất bại
+                const originalText = buttonElement.textContent;
+                buttonElement.textContent = 'Lỗi sao chép!';
+                buttonElement.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+                buttonElement.classList.add('bg-red-500');
+
+                setTimeout(() => {
+                    buttonElement.textContent = originalText;
+                    buttonElement.classList.remove('bg-red-500');
+                    buttonElement.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                }, 2000);
+            }
+        }
+
+
+        // Cập nhật thanh tiến trình tổng thể
+        function updateProgressBar() {
+            let completed = 0;
+            // FIX: Đã sửa lỗi cú pháp 'missing )' trong định nghĩa arrow function của reduce
+            const total = stepsData.reduce((count, section) => count + section.tasks.length, 0);
+
+            stepsData.forEach(section => {
+                section.tasks.forEach(task => {
+                    if (loadTaskState(task.id)) {
+                        completed++;
+                    }
+                });
+            });
+
+            renderProgressBar(completed, total);
+        }
+
+        // Render hoặc cập nhật thanh tiến trình
+        function renderProgressBar(completed, total) {
+            let progressBar = document.getElementById('progress-bar-container');
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            if (!progressBar) {
+                progressBar = document.createElement('div');
+                progressBar.id = 'progress-bar-container';
+                // Đặt progress bar ngay dưới header
+                progressBar.className = 'sticky top-0 z-10 p-4 bg-white shadow-xl rounded-b-2xl mb-8';
+                
+                const header = document.getElementById('app').querySelector('header');
+                header.insertAdjacentElement('afterend', progressBar);
+            }
+
+            progressBar.innerHTML = `
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-sm font-semibold text-gray-700">Tiến độ Hoàn thành</span>
+                    <span class="text-sm font-bold text-indigo-600">${completed} / ${total} (${percentage}%)</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500 ease-out" style="width: ${percentage}%"></div>
+                </div>
+            `;
+            
+            // Thêm hiệu ứng chúc mừng khi hoàn thành 100%
+            if (percentage === 100) {
+                progressBar.innerHTML += `
+                    <div class="mt-2 text-center text-green-600 font-bold text-lg animate-pulse">
+                        🎉 Chúc mừng! Dự án của bạn đã sẵn sàng Triển khai! 🎉
+                    </div>
+                `;
+            }
+        }
+        
+        // Hàm cập nhật vị trí slide và trạng thái nút điều hướng
+        function updateSlidePosition() {
+            const slidesWrapper = document.getElementById('slides-wrapper');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const phaseCounter = document.getElementById('phase-counter');
+            
+            const totalPhases = getDynamicStepsData().length;
+            
+            // Tính toán vị trí trượt ngang
+            slidesWrapper.style.transform = `translateX(-${currentPhaseIndex * 100}%)`;
+
+            // Cập nhật trạng thái nút điều hướng
+            prevBtn.disabled = (currentPhaseIndex === 0);
+            nextBtn.disabled = (currentPhaseIndex === totalPhases - 1);
+            
+            // Cập nhật bộ đếm Phase
+            phaseCounter.textContent = `Phase ${currentPhaseIndex + 1} / ${totalPhases}`;
+        }
+        
+        // Hàm điều hướng đến một Phase cụ thể
+        function goToPhase(index) {
+            const totalPhases = getDynamicStepsData().length;
+            if (index >= 0 && index < totalPhases) {
+                currentPhaseIndex = index;
+                updateSlidePosition();
+                updateSlideContent(currentPhaseIndex); // Tải lại nội dung để cập nhật Breadcrumb
+            }
+        }
+
+        // Hàm điều hướng slide (dùng cho nút bấm)
+        function navigateSlides(direction) {
+            goToPhase(currentPhaseIndex + direction);
+        }
+
+        // Hàm cập nhật nội dung của một slide cụ thể (sau khi input thay đổi)
+        function updateSlideContent(phaseIndex) {
+            const dynamicData = getDynamicStepsData();
+            const section = dynamicData[phaseIndex];
+            const slideElement = document.getElementById(`slide-${section.id}`);
+            
+            if (!slideElement) return;
+
+            // Xóa nội dung cũ
+            slideElement.innerHTML = ''; 
+
+            // ==========================================================
+            // 1. TẠO THANH BREADCRUMB (PROGRESS HEADER)
+            // ==========================================================
+            const breadcrumbContainer = document.createElement('div');
+            // Class gọn hơn, linh hoạt hơn, dùng flex-wrap để xuống dòng trên mobile nếu cần
+            breadcrumbContainer.className = 'flex flex-wrap items-center text-sm font-medium mb-6 p-3 bg-gray-100 rounded-xl shadow-inner border border-gray-200';
+            
+            dynamicData.forEach((phase, index) => {
+                const isCurrent = index === phaseIndex;
+                const isCompleted = index < phaseIndex;
+                
+                // Chỉ hiển thị phase đã hoàn thành và phase hiện tại
+                if (index > phaseIndex && !isCurrent) {
+                    return; 
+                }
+                
+                const span = document.createElement('span');
+                span.className = `flex items-center whitespace-nowrap`;
+
+                if (isCompleted) {
+                    // Phase đã qua: Text xanh, có thể click để quay lại
+                    span.innerHTML = `
+                        <button onclick="goToPhase(${index})" class="text-green-700 hover:text-green-900 transition duration-150 flex items-center font-semibold text-xs md:text-sm">
+                            <svg class="w-4 h-4 mr-1 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            ${index + 1}
+                        </button>
+                    `;
+                } else if (isCurrent) {
+                    // Phase hiện tại: Text đậm, màu tím, highlight
+                    span.innerHTML = `
+                        <span class="text-indigo-600 font-extrabold text-sm md:text-base p-1 rounded-md bg-indigo-100">
+                            ${index + 1}: ${phase.title}
+                        </span>
+                    `;
+                }
+                
+                breadcrumbContainer.appendChild(span);
+
+                // Thêm dấu ngăn cách (chỉ cho các mục ĐÃ HOÀN THÀNH)
+                if (isCompleted) {
+                    const separator = document.createElement('span');
+                    separator.className = 'mx-1.5 text-gray-400 font-light';
+                    separator.textContent = '>';
+                    breadcrumbContainer.appendChild(separator);
+                }
+            });
+
+            slideElement.appendChild(breadcrumbContainer);
+
+            // ==========================================================
+            // 2. TIÊU ĐỀ VÀ DANH SÁCH GỌN GÀNG HƠN
+            // ==========================================================
+            
+            // Tiêu đề Section (Giảm kích thước text và padding)
+            const titleElement = document.createElement('h2');
+            titleElement.className = `${section.color} text-white text-lg font-bold p-2 rounded-lg mb-4`;
+            titleElement.textContent = section.title;
+            slideElement.appendChild(titleElement);
+
+            // Danh sách Tasks (Giảm khoảng cách)
+            const ul = document.createElement('ul');
+            ul.className = 'space-y-3'; // Giảm từ space-y-4 -> space-y-3
+
+            section.tasks.forEach(task => {
+                const isChecked = loadTaskState(task.id);
+
+                const li = document.createElement('li');
+                // Giảm padding li và thêm border mỏng để phân tách
+                li.className = 'p-1.5 rounded-lg transition duration-150 hover:bg-gray-50 border-b border-gray-100 last:border-b-0'; 
+                
+                // Checkbox and Label
+                const checkContainer = document.createElement('div');
+                checkContainer.className = 'flex items-start';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `check-${task.id}`;
+                checkbox.checked = isChecked;
+                // Giảm kích thước checkbox
+                checkbox.className = 'mt-1 mr-3 w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer flex-shrink-0';
+                checkbox.addEventListener('change', () => toggleTask(task.id));
+
+                const label = document.createElement('label');
+                label.htmlFor = `check-${task.id}`;
+                // Giảm text-base -> text-sm
+                label.className = `flex-1 text-gray-700 font-medium text-sm leading-snug cursor-pointer ${isChecked ? 'line-through text-gray-400' : ''}`;
+                label.innerHTML = task.text;
+
+                checkContainer.appendChild(checkbox);
+                checkContainer.appendChild(label);
+                li.appendChild(checkContainer);
+
+                // Input Field (if required)
+                if (task.isInputRequired) {
+                    const inputContainer = document.createElement('div');
+                    // Giảm thụt lề từ ml-7 xuống ml-6
+                    inputContainer.className = 'mt-1 ml-6 flex items-center space-x-3'; 
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.id = `input-${task.inputId}`;
+                    
+                    const currentValue = projectData[task.inputId] || '';
+                    input.value = currentValue;
+
+                    input.placeholder = task.inputPlaceholder;
+                    // Giảm padding/text size
+                    input.className = `flex-grow px-2 py-1.5 border ${currentValue ? 'border-green-400' : 'border-indigo-300'} rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-ring-indigo-500 focus:border-indigo-500 text-xs`;
+                    
+                    // --- ĐIỀU CHỈNH: Chỉ lưu và cập nhật khi Blur (Tab/Click away) hoặc Enter ---
+                    
+                    // 1. Event listener cho Blur (Thoát khỏi ô nhập liệu)
+                    input.addEventListener('blur', (e) => {
+                        // Gọi hàm handleInput để lưu dữ liệu và re-render slide
+                        handleInput(task.inputId, e.target.value);
+                    });
+
+                    // 2. Event listener cho Keydown (Nhấn Enter)
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault(); 
+                            // Buộc ô nhập liệu mất focus (blur) để kích hoạt event 'blur' ở trên
+                            e.target.blur(); 
+                        }
+                    });
+
+                    // --- KẾT THÚC ĐIỀU CHỈNH ---
+                    
+                    inputContainer.appendChild(input); 
+
+                    // Status Badge (Đã ghi nhận)
+                    if (currentValue) {
+                        const statusBadge = document.createElement('span');
+                        statusBadge.className = 'flex-shrink-0 inline-flex items-center px-2 py-0.5 text-xs font-medium leading-none text-green-800 bg-green-200 rounded-full';
+                        statusBadge.innerHTML = 'Đã ghi nhận';
+                        inputContainer.appendChild(statusBadge);
+                    }
+                    
+                    li.appendChild(inputContainer);
+                }
+
+                // Code Snippet (if available)
+                if (task.codeSnippet) {
+                    const codeWrapper = document.createElement('div');
+                    // Giảm thụt lề từ ml-7 xuống ml-6
+                    codeWrapper.className = 'relative mt-2 ml-6'; 
+
+                    // The actual code block (PRE)
+                    const codePre = document.createElement('pre');
+                    const code = document.createElement('code');
+                    // Set an ID to reference the code content for copying
+                    code.id = `code-snippet-${task.id}`; 
+                    code.textContent = task.codeSnippet;
+                    codePre.appendChild(code);
+
+                    // Copy button
+                    const copyButton = document.createElement('button');
+                    copyButton.textContent = 'Sao chép Code';
+                    copyButton.className = 'absolute top-1 right-1 px-3 py-1 bg-gray-600 text-white text-xs font-semibold rounded-lg hover:bg-gray-700 transition duration-150';
+                    copyButton.setAttribute('data-task-id', task.id);
+                    // Pass the task ID và the button element itself to the copy function
+                    copyButton.onclick = (e) => copyCode(task.id, e.target); 
+                    
+                    codeWrapper.appendChild(codePre);
+                    codeWrapper.appendChild(copyButton);
+                    li.appendChild(codeWrapper);
+                }
+
+                ul.appendChild(li);
+            });
+
+            slideElement.appendChild(ul);
+        }
+
+        // Hàm chính để render lại tất cả các bước (tạo cấu trúc slide)
+        function renderSteps() {
+            const slidesWrapper = document.getElementById('slides-wrapper');
+            slidesWrapper.innerHTML = ''; // Clear existing slides
+
+            // Cập nhật lại stepsData với dữ liệu đã lưu
+            const dynamicStepsData = getDynamicStepsData();
+            
+            dynamicStepsData.forEach(section => {
+                const sectionElement = document.createElement('div');
+                // Quan trọng: Thêm class slide-item để đảm bảo chiều rộng 100% và không co lại
+                sectionElement.className = 'slide-item p-5 md:p-6'; 
+                sectionElement.id = `slide-${section.id}`;
+                
+                // Sử dụng hàm updateSlideContent để render nội dung của từng slide
+                slidesWrapper.appendChild(sectionElement);
+                // Render nội dung bên trong slide card
+                updateSlideContent(dynamicStepsData.indexOf(section)); 
+            });
+            
+            // Thiết lập vị trí slide ban đầu và trạng thái nút
+            updateSlidePosition();
+            
+            // Render Progress Bar
+            updateProgressBar();
+        }
+
+        // Hàm lấy dữ liệu bước hướng dẫn đã được cá nhân hóa
+        function getDynamicStepsData() {
+            // Clone stepsData to modify text dynamically
+            const dynamicData = JSON.parse(JSON.stringify(stepsData)); 
+            
+            // Define dynamic variables with current project data
+            const projectName = projectData.projectName || 'Tên Dự án của bạn';
+            const apiKey = projectData.firebaseApiKey || 'Dán KEY đã lưu tại đây';
+            const repoUrl = projectData.githubRepoUrl || 'URL Repo đã lưu';
+
+            // 1. Update Firebase Project Name (Phase 3, Task 0)
+            dynamicData[2].tasks[0].text = `Tạo một dự án mới trong Firebase Console (đặt tên: <span class="text-indigo-600 font-semibold">${projectName}</span>).`;
+            
+            // 2. Update .env.local file content with current API key (Phase 3, Task 5: t14_env_local)
+            if (dynamicData[2] && dynamicData[2].tasks && dynamicData[2].tasks[5]) { 
+                 dynamicData[2].tasks[5].codeSnippet = 
+                    `# file: .env.local
+NEXT_PUBLIC_FIREBASE_API_KEY="${apiKey}"
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="..."
+# KHÔNG BAO GỒM TỆP NÀY KHI COMMIT LÊN GITHUB!`;
+            }
+
+            // 3. Update Vercel Import URL (Phase 5, Task 0)
+            dynamicData[4].tasks[0].text = `Đăng nhập Vercel và chọn "Add New Project", sau đó Import Repository từ GitHub (<a href="${repoUrl} " target="_blank" class="text-indigo-500 underline">${repoUrl}</a>).`;
+
+            return dynamicData;
+        }
+
+        // Bắt đầu ứng dụng
+        function initApp() {
+            loadState(); // Tải dữ liệu đã lưu
+            renderSteps(); // Render các bước
+            updateProjectDataDisplay(); // Hiển thị dữ liệu dự án đã lưu
+        }
+
+        window.onload = initApp;
+    </script>
+
+</body>
+</html>
