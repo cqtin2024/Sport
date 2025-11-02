@@ -73,7 +73,7 @@
                 Hành Trình Triển Khai App Hiện Đại
             </h1>
             <p class="text-xl text-indigo-600 font-semibold">
-                GitHub ➔ Vercel ➔ Google (Firebase)
+                QUY TRÌNH CHỈ SỬ DỤNG GIAO DIỆN TRÌNH DUYỆT (ONLINE FIRST)
             </p>
             <p class="text-sm text-gray-500 mt-2">
                 Hoàn thành các bước dưới đây. Tiến trình và dữ liệu được lưu tự động trên trình duyệt này.
@@ -112,7 +112,7 @@
         <!-- End Carousel Structure -->
 
         <footer class="text-center mt-10 text-gray-500 text-xs">
-            Phiên bản hướng dẫn: Mẫu App Next.js/React.
+            Phiên bản hướng dẫn: Mẫu App Next.js/React - Ưu tiên Trình duyệt.
         </footer>
     </div>
 
@@ -123,28 +123,128 @@
         const TASK_STATE_KEY = 'project_setup_task_state';
         let currentPhaseIndex = 0; // State mới: Theo dõi slide/phase hiện tại
 
-        // Dữ liệu các bước hướng dẫn
+        // Dữ liệu các bước hướng dẫn (Đã chỉnh sửa để phù hợp với quy trình Online/Browser)
         const stepsData = [
             {
                 id: 'accounts',
                 title: 'Phase 1: Chuẩn bị Tài khoản Cơ bản',
                 color: 'bg-indigo-500',
                 tasks: [
-                    { id: 't1_github', text: 'Tạo tài khoản GitHub (hoặc đăng nhập).', isInputRequired: true, inputId: 'githubUsername', inputPlaceholder: 'Nhập Tên người dùng GitHub của bạn' },
-                    { id: 't2_vercel', text: 'Tạo tài khoản Vercel (nên đăng ký bằng GitHub).', isInputRequired: true, inputId: 'vercelUsername', inputPlaceholder: 'Nhập Tên team/người dùng Vercel' },
+                    { id: 't1_github', text: 'Đăng nhập vào tài khoản GitHub.', isInputRequired: true, inputId: 'githubUsername', inputPlaceholder: 'Nhập Tên người dùng GitHub của bạn' },
+                    { id: 't2_vercel', text: 'Đăng nhập vào tài khoản Vercel (nên liên kết với GitHub).', isInputRequired: true, inputId: 'vercelUsername', inputPlaceholder: 'Nhập Tên team/người dùng Vercel' },
                     { id: 't3_google_acc', text: 'Đảm bảo có tài khoản Google để dùng Firebase.', isInputRequired: true, inputId: 'googleEmail', inputPlaceholder: 'Nhập Email Google/Firebase' }
                 ]
             },
             {
                 id: 'github_setup',
-                title: 'Phase 2: Thiết lập Dự án và GitHub',
+                title: 'Phase 2: Khởi tạo Code trực tuyến trên GitHub (Next.js)',
                 color: 'bg-gray-700',
                 tasks: [
-                    { id: 't4_local_project', text: 'Khởi tạo dự án Next.js/React (ví dụ: npx create-next-app@latest).', isInputRequired: true, inputId: 'projectName', inputPlaceholder: 'Nhập Tên Dự án (ví dụ: sport-manager)' },
-                    { id: 't5_git_init', text: 'Khởi tạo Git trong thư mục dự án (git init).' },
-                    { id: 't6_first_commit', text: 'Thêm và commit code lần đầu (git add . && git commit -m "initial commit").' },
-                    { id: 't7_github_repo', text: 'Tạo một Repository mới trên GitHub.', isInputRequired: true, inputId: 'githubRepoUrl', inputPlaceholder: 'Dán URL Repo GitHub (ví dụ: https://github.com/user/project)' },
-                    { id: 't8_push', text: 'Liên kết và đẩy code lên GitHub (git remote add origin... && git push...).' }
+                    { 
+                        id: 't4_create_repo', 
+                        text: 'Tạo một Repository mới (public hoặc private) trên GitHub.', 
+                        isInputRequired: true, 
+                        inputId: 'githubRepoUrl', 
+                        inputPlaceholder: 'Dán URL Repo GitHub (ví dụ: https://github.com/user/project)',
+                        detail: `
+                            <p class="mb-2"><strong>Hướng dẫn Tạo Repo:</strong></p>
+                            <ul class="list-disc list-inside ml-4 text-sm space-y-0.5">
+                                <li>Truy cập GitHub và chọn **New**.</li>
+                                <li>Đặt tên Repo (ví dụ: sport-manager-online).</li>
+                                <li>Quan trọng: Đảm bảo **KHÔNG** chọn tùy chọn "Add a README file" hay ".gitignore". Chúng ta sẽ tạo thủ công các file này.</li>
+                                <li>Nhấn **Create repository**.</li>
+                            </ul>
+                        `
+                    },
+                    { 
+                        id: 't5_package_json', 
+                        text: 'Tạo file `package.json` để định nghĩa dự án và thư viện.',
+                        detail: `
+                            <p class="mb-2"><strong>Cách tạo file trên GitHub:</strong></p>
+                            <p class="mb-1">1. Trong Repo mới tạo, chọn nút **Add file** -> **Create new file**.</p>
+                            <p class="mb-1">2. Đặt tên file là <code>package.json</code> (ở thư mục gốc).</p>
+                            <p class="mb-1">3. Sao chép và dán nội dung code mẫu bên dưới (Commit sau khi dán).</p>
+                            <h4 class="font-bold mt-3 mb-1 text-gray-700">Nội dung package.json:</h4>
+                        `,
+                        codeSnippet: 
+`{
+  "name": "sport-manager-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "react": "^18",
+    "react-dom": "^18",
+    "next": "14.2.3",
+    "firebase": "^10.12.2"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.3"
+  }
+}`
+                    },
+                    { 
+                        id: 't6_core_files', 
+                        text: 'Tạo các file cấu hình và mã nguồn cốt lõi (next.config.js, .gitignore, src/app/...).',
+                        detail: `
+                            <p class="mb-2"><strong>Tạo lần lượt các file sau trên GitHub (Add file -> Create new file), nhớ kèm theo đường dẫn:</strong></p>
+                            
+                            <h4 class="font-bold mt-3 mb-1 text-gray-700">1. next.config.js (Đặt ở thư mục gốc)</h4>
+                            <pre class="bg-gray-800 text-white p-3 rounded text-sm overflow-x-auto">
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+    reactStrictMode: true,
+    experimental: {
+        appDir: true,
+    },
+};
+
+module.exports = nextConfig;
+                            </pre>
+
+                            <h4 class="font-bold mt-3 mb-1 text-gray-700">2. .gitignore (Đặt ở thư mục gốc)</h4>
+                            <pre class="bg-gray-800 text-white p-3 rounded text-sm overflow-x-auto">
+/node_modules
+/.next/
+.env.local
+.DS_Store
+# KHÔNG BAO GỒM CÁC FILE LỚN HOẶC NHẠY CẢM
+                            </pre>
+                            
+                            <h4 class="font-bold mt-3 mb-1 text-gray-700">3. src/app/globals.css (Cần để Tailwind hoạt động)</h4>
+                            <pre class="bg-gray-800 text-white p-3 rounded text-sm overflow-x-auto">
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+                            </pre>
+                            
+                            <h4 class="font-bold mt-3 mb-1 text-gray-700">4. src/app/page.tsx (Trang chủ tối thiểu)</h4>
+                            <pre class="bg-gray-800 text-white p-3 rounded text-sm overflow-x-auto">
+// Đảm bảo tạo thư mục src/app/
+export default function Home() {
+  return (
+    &lt;main>
+      &lt;h1 class="text-xl p-4">Dự án đã sẵn sàng để Deploy lên Vercel!&lt;/h1>
+    &lt;/main>
+  );
+}
+                            </pre>
+                            <p class="mt-2 text-xs text-indigo-600 font-semibold">Sau khi tạo xong tất cả 4 files/folders này, Repo đã đủ điều kiện để Vercel nhận diện và Build.</p>
+                        `
+                    },
+                    { id: 't7_initial_commit', text: 'Commit (Lưu) tất cả các file vừa tạo. Repository đã sẵn sàng! (Vercel sẽ tự động build từ đây).' }
                 ]
             },
             {
@@ -153,14 +253,15 @@
                 color: 'bg-yellow-600',
                 tasks: [
                     { id: 't9_firebase_project', text: 'Tạo một dự án mới trong Firebase Console (đặt tên: ' + (projectData.projectName || 'Tên Dự án của bạn') + ').' },
-                    { id: 't10_web_app', text: 'Thêm một "Web app" vào dự án Firebase và sao chép cấu hình (firebaseConfig).', isInputRequired: true, inputId: 'firebaseApiKey', inputPlaceholder: 'Dán Firebase API Key (để dùng trong .env)' },
-                    { id: 't11_install_sdk', text: 'Cài đặt Firebase SDK vào dự án local (npm install firebase).' },
-                    { id: 't12_init_firebase', text: 'Tạo tệp cấu hình để khởi tạo Firebase trong code (sử dụng API Key đã lưu).', codeSnippet: 
-`// file: firebase-init.js (hoặc .ts)
+                    { id: 't10_web_app', text: 'Thêm một "Web app" vào dự án Firebase và sao chép cấu hình (firebaseConfig).', isInputRequired: true, inputId: 'firebaseApiKey', inputPlaceholder: 'Dán Firebase API Key (để dùng trong Vercel)' },
+                    { id: 't11_install_sdk', text: 'Trong file `package.json` trên GitHub, đảm bảo đã có thư viện `firebase` trong `dependencies` (Đã được cung cấp ở bước T5).', isInputRequired: false },
+                    { id: 't12_init_firebase', text: 'Lưu ý: Mã khởi tạo Firebase sẽ được viết trực tiếp trên GitHub sau khi Deploy thành công lần đầu.', codeSnippet: 
+`// Sau khi Deploy lần 1, bạn sẽ chỉnh sửa file này trực tuyến trên GitHub
+// file: lib/firebase-init.js 
 import { initializeApp } from "firebase/app";
-// Lấy các biến từ môi trường (Next.js/React)
+// Lấy các biến từ môi trường (Vercel)
 const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY, // Sử dụng Key đã lưu
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY, 
     authDomain: "..."
     // ...
 };
@@ -168,21 +269,16 @@ export const app = initializeApp(firebaseConfig);
 ` 
                     },
                     { id: 't13_auth', text: 'Trong Firebase: Bật phương thức đăng nhập Google (Authentication -> Sign-in method).' },
-                    { id: 't14_env_local', text: 'Tạo tệp .env.local và thêm các biến môi trường Firebase.', codeSnippet: 
-`# file: .env.local
-NEXT_PUBLIC_FIREBASE_API_KEY="[KEY_DÁN_TẠI_ĐÂY]"
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="..."
-# KHÔNG BAO GỒM TỆP NÀY KHI COMMIT LÊN GITHUB!`
-                    }
+                    { id: 't14_env_online', text: 'Lưu lại tất cả các biến môi trường Firebase để dùng trên Vercel.' }
                 ]
             },
             {
                 id: 'database_schema',
-                title: 'Phase 4: Cấu trúc Database (Firestore) & Code Mẫu (App Hội thao)',
+                title: 'Phase 4: Cấu trúc Database (Firestore) & Code Mẫu',
                 color: 'bg-green-600',
                 tasks: [
                     { id: 't15_firestore_db', text: 'Tạo cơ sở dữ liệu Firestore trong Firebase Console (chọn mode "Production").' },
-                    { id: 't16_security_rules', text: 'Thiết lập Security Rules (chấp nhận read/write cho người dùng đã đăng nhập).', codeSnippet: 
+                    { id: 't16_security_rules', text: 'Thiết lập Security Rules cơ bản (chấp nhận read/write cho người dùng đã đăng nhập).', codeSnippet: 
 `// Ví dụ về Firestore Rules (CẦN TÙY CHỈNH THEO BẢO MẬT)
 rules_version = '2';
 service cloud.firestore {
@@ -217,22 +313,7 @@ service cloud.firestore {
 //      - score: 0
 // `
                     },
-                    { id: 't18_fetch_code', text: 'Viết mã mẫu để fetch dữ liệu Events từ Firestore.', codeSnippet: 
-`// Ví dụ Code JavaScript/React để đọc dữ liệu (cần import db từ firebase-init.js)
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "./firebase-init"; // Giả sử đã import
-
-async function getEvents() {
-  const eventsCol = collection(db, 'events');
-  const eventSnapshot = await getDocs(eventsCol);
-  const eventList = eventSnapshot.docs.map(doc => ({ 
-    id: doc.id, 
-    ...doc.data() 
-  }));
-  console.log(eventList);
-  return eventList;
-}`
-                    }
+                    { id: 't18_fetch_code', text: 'Viết mã mẫu để fetch dữ liệu Events từ Firestore (Sẽ được code trực tuyến trên GitHub sau khi Deploy).' }
                 ]
             },
             {
@@ -240,10 +321,10 @@ async function getEvents() {
                 title: 'Phase 5: Triển khai Tự động với Vercel',
                 color: 'bg-black',
                 tasks: [
-                    { id: 't19_vercel_import', text: 'Đăng nhập Vercel và chọn "Add New Project", sau đó Import Repository từ GitHub (' + (projectData.githubRepoUrl || 'URL Repo đã lưu') + ').', isInputRequired: true, inputId: 'vercelProjectUrl', inputPlaceholder: 'Dán URL Project Vercel (ví dụ: https://my-app.vercel.app)' },
-                    { id: 't20_env_vercel', text: 'Quan trọng: Dán tất cả các biến môi trường (NEXT_PUBLIC_...) vào Cấu hình Biến môi trường trên Vercel.' },
-                    { id: 't21_deploy_first', text: 'Nhấn Deploy và chờ đợi lần triển khai đầu tiên thành công.' },
-                    { id: 't22_test_cd', text: 'Kiểm tra Continuous Deployment: Thực hiện một thay đổi nhỏ, commit và push lên GitHub. Xem Vercel tự động build và deploy lại.' }
+                    { id: 't19_vercel_import', text: 'Đăng nhập Vercel và chọn "Add New Project", sau đó Import Repository từ GitHub (<a href="' + (projectData.githubRepoUrl || '#') + '" target="_blank" class="text-indigo-300 underline">Repo đã tạo trực tuyến</a>).', isInputRequired: true, inputId: 'vercelProjectUrl', inputPlaceholder: 'Dán URL Project Vercel (ví dụ: https://my-app.vercel.app)' },
+                    { id: 't20_env_vercel', text: 'Quan trọng: Dán tất cả các biến môi trường NEXT_PUBLIC_... (lấy từ Phase 3) vào Cấu hình Biến môi trường trên Vercel.' },
+                    { id: 't21_deploy_first', text: 'Nhấn Deploy và chờ đợi lần triển khai đầu tiên thành công (Vercel tự động build).' },
+                    { id: 't22_test_cd', text: 'Kiểm tra Continuous Deployment: Thực hiện một thay đổi nhỏ TRỰC TUYẾN trên GitHub. Xem Vercel tự động build và deploy lại.' }
                 ]
             },
         ];
@@ -301,17 +382,20 @@ async function getEvents() {
         
         function toggleTask(taskId) {
             const checkbox = document.getElementById(`check-${taskId}`);
-            const label = document.querySelector(`label[for="check-${taskId}"]`);
+            // Không sử dụng querySelector cho label nữa vì nó nằm trong labelWrapper
             const isChecked = checkbox.checked;
 
             saveTaskState(taskId, isChecked);
 
+            // Tìm label để gạch ngang
+            const labelElement = document.getElementById(`label-${taskId}`);
+
             if (isChecked) {
-                label.classList.add('line-through', 'text-gray-400');
-                label.classList.remove('text-gray-700');
+                labelElement.classList.add('line-through', 'text-gray-400');
+                labelElement.classList.remove('text-gray-700');
             } else {
-                label.classList.remove('line-through', 'text-gray-400');
-                label.classList.add('text-gray-700');
+                labelElement.classList.remove('line-through', 'text-gray-400');
+                labelElement.classList.add('text-gray-700');
             }
             
             updateProgressBar();
@@ -333,12 +417,17 @@ async function getEvents() {
             if (!codeContainer) return;
 
             const tempTextarea = document.createElement('textarea');
-            tempTextarea.value = codeContainer.textContent.trim(); 
+            // Cần lấy textContent của codeContainer (pre)
+            // Lấy nội dung từ PRE
+            const codeContent = codeContainer.closest('pre').textContent.trim();
+            tempTextarea.value = codeContent;
+            
             document.body.appendChild(tempTextarea);
             tempTextarea.select();
 
             let success = false;
             try {
+                // Sử dụng document.execCommand('copy') do giới hạn iFrame
                 success = document.execCommand('copy');
             } catch (err) {
                 console.error('Copy failed:', err);
@@ -357,6 +446,7 @@ async function getEvents() {
                 
                 setTimeout(() => {
                     buttonElement.textContent = originalText;
+                    // Restore original classes by copying from a template or stored array
                     buttonElement.className = originalClasses.join(' ');
                 }, 2000);
             } else {
@@ -493,10 +583,9 @@ async function getEvents() {
 
             // Nếu không phải render lại toàn bộ, ta thoát sớm sau khi cập nhật các giá trị động
             if (!isFullRender && slideElement.innerHTML.trim() !== '') {
-                // Chỉ cần cập nhật các giá trị động (ví dụ: các biến trong Code Snippet/Label)
-                // Hàm này sẽ tự gọi lại render toàn bộ nếu cần (ví dụ: khi input thay đổi)
-                // Tuy nhiên, vì chúng ta đã kiểm soát việc render ở goToPhase, ta không cần làm gì thêm
-                // ở đây ngoài việc đảm bảo dữ liệu cá nhân hóa (như tên dự án) là chính xác
+                // Ta có thể thêm logic cập nhật giá trị động ở đây nếu cần,
+                // nhưng hiện tại, ta đã đảm bảo task.text và codeSnippet được cập nhật
+                // thông qua getDynamicStepsData() trước khi render lần đầu
                 return;
             }
             
@@ -565,7 +654,7 @@ async function getEvents() {
                 const li = document.createElement('li');
                 li.className = 'py-1.5 px-3 rounded-lg transition duration-150 hover:bg-gray-50'; 
                 
-                // Checkbox and Label
+                // Checkbox and Label Container (main row)
                 const checkContainer = document.createElement('div');
                 checkContainer.className = 'flex items-start';
                 
@@ -575,16 +664,75 @@ async function getEvents() {
                 checkbox.checked = isChecked;
                 checkbox.className = 'mt-1 mr-3 w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer flex-shrink-0';
                 checkbox.addEventListener('change', () => toggleTask(task.id));
-
+                
+                // --- Task Text and Detail Button Wrapper ---
+                const labelWrapper = document.createElement('div');
+                // Sử dụng flex-1 để nó chiếm hết phần không gian còn lại
+                labelWrapper.className = 'flex-1 flex justify-between items-start'; 
+                
                 const label = document.createElement('label');
                 label.htmlFor = `check-${task.id}`;
-                label.className = `flex-1 text-gray-700 font-medium text-sm leading-snug cursor-pointer ${isChecked ? 'line-through text-gray-400' : ''}`;
-                // Sử dụng innerHTML để parse thẻ span bên trong task.text
+                label.id = `label-${task.id}`; // Thêm ID cho label để toggleTask có thể tìm thấy
+                // Không dùng flex-1 cho label, mà dùng cho labelWrapper
+                label.className = `text-gray-700 font-medium text-sm leading-snug cursor-pointer pr-4 ${isChecked ? 'line-through text-gray-400' : ''}`;
                 label.innerHTML = task.text; 
+                
+                labelWrapper.appendChild(label); // Label (text) goes in wrapper
+                
+                // Detail Logic (Thêm nút ?)
+                if (task.detail || task.codeSnippet) {
+                    const detailButton = document.createElement('button');
+                    detailButton.innerHTML = `<svg class="w-5 h-5 ml-2 text-indigo-500 hover:text-indigo-700 transition flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                    detailButton.title = "Xem chi tiết hướng dẫn";
+                    // Tăng kích thước button nhẹ nhàng
+                    detailButton.className = 'flex-shrink-0 focus:outline-none -mt-1 p-1 hover:bg-indigo-100 rounded-full'; 
+                    
+                    const detailContent = document.createElement('div');
+                    detailContent.id = `detail-${task.id}`;
+                    detailContent.className = 'hidden mt-2 ml-6 p-3 bg-indigo-50 border border-indigo-200 rounded-lg text-xs transition-all duration-300';
+                    detailContent.innerHTML = (task.detail || '');
 
+                    detailButton.addEventListener('click', (e) => {
+                        e.preventDefault(); 
+                        e.stopPropagation(); // Ngăn chặn sự kiện click lan truyền lên checkbox
+                        detailContent.classList.toggle('hidden');
+                        detailButton.classList.toggle('text-indigo-700'); // Đổi màu khi đang mở
+                    });
+
+                    labelWrapper.appendChild(detailButton); // Button goes in wrapper
+                    
+                    // Thêm Code Snippet vào Detail Content (Nếu có)
+                    if (task.codeSnippet) {
+                        const codeWrapper = document.createElement('div');
+                        codeWrapper.className = 'relative mt-2';
+                        
+                        // The actual code block (PRE)
+                        const codePre = document.createElement('pre');
+                        const code = document.createElement('code');
+                        code.id = `code-snippet-${task.id}`; 
+                        // Thêm class để ẩn code nếu nó được hiển thị trong detail
+                        code.textContent = task.codeSnippet;
+                        codePre.appendChild(code);
+
+                        // Copy button
+                        const copyButton = document.createElement('button');
+                        copyButton.textContent = 'Sao chép Code';
+                        copyButton.className = 'absolute top-1 right-1 px-3 py-1 bg-gray-600 text-white text-xs font-semibold rounded-lg hover:bg-gray-700 transition duration-150';
+                        copyButton.setAttribute('data-task-id', task.id);
+                        copyButton.onclick = (e) => copyCode(task.id, e.target); 
+                        
+                        codeWrapper.appendChild(codePre);
+                        codeWrapper.appendChild(copyButton);
+                        detailContent.appendChild(codeWrapper);
+                    }
+                    
+                    li.appendChild(detailContent); // Detail content goes in <li>, bên dưới main row
+                }
+                
                 checkContainer.appendChild(checkbox);
-                checkContainer.appendChild(label);
-                li.appendChild(checkContainer);
+                checkContainer.appendChild(labelWrapper); // Wrapper (label + button)
+                li.appendChild(checkContainer); // Append main row to <li>
+
 
                 // Input Field (if required)
                 if (task.isInputRequired) {
@@ -624,29 +772,10 @@ async function getEvents() {
                     
                     li.appendChild(inputContainer);
                 }
-
-                // Code Snippet (if available)
-                if (task.codeSnippet) {
-                    const codeWrapper = document.createElement('div');
-                    codeWrapper.className = 'relative mt-2 ml-6'; 
-
-                    // The actual code block (PRE)
-                    const codePre = document.createElement('pre');
-                    const code = document.createElement('code');
-                    code.id = `code-snippet-${task.id}`; 
-                    code.textContent = task.codeSnippet;
-                    codePre.appendChild(code);
-
-                    // Copy button
-                    const copyButton = document.createElement('button');
-                    copyButton.textContent = 'Sao chép Code';
-                    copyButton.className = 'absolute top-1 right-1 px-3 py-1 bg-gray-600 text-white text-xs font-semibold rounded-lg hover:bg-gray-700 transition duration-150';
-                    copyButton.setAttribute('data-task-id', task.id);
-                    copyButton.onclick = (e) => copyCode(task.id, e.target); 
-                    
-                    codeWrapper.appendChild(codePre);
-                    codeWrapper.appendChild(copyButton);
-                    li.appendChild(codeWrapper);
+                
+                // Code Snippet (Code không nằm trong detail - Chỉ dùng cho các bước khác)
+                if (task.codeSnippet && !task.detail) {
+                    // Logic này không cần thiết vì tất cả code snippet đã được chuyển vào Detail
                 }
 
                 ul.appendChild(li);
@@ -679,26 +808,29 @@ async function getEvents() {
             const dynamicData = JSON.parse(JSON.stringify(stepsData)); 
             
             const projectName = projectData.projectName || 'Tên Dự án của bạn';
+            // Không còn cần projectName input nữa, nhưng giữ lại cho Phase 3
+            // Dùng tên mặc định nếu chưa có
+            projectData.projectName = projectData.projectName || 'sport-manager-online'; 
+            
             const apiKey = projectData.firebaseApiKey || 'Dán KEY đã lưu tại đây';
             const repoUrl = projectData.githubRepoUrl || 'URL Repo đã lưu';
 
-            dynamicData[2].tasks[0].text = `Tạo một dự án mới trong Firebase Console (đặt tên: <span class="text-indigo-600 font-semibold">${projectName}</span>).`;
+            // Cập nhật Phase 3 dựa trên tên dự án mặc định
+            dynamicData[2].tasks[0].text = `Tạo một dự án mới trong Firebase Console (đặt tên: <span class="text-indigo-600 font-semibold">${projectData.projectName}</span>).`;
             
-            if (dynamicData[2] && dynamicData[2].tasks && dynamicData[2].tasks[5]) { 
-                 dynamicData[2].tasks[5].codeSnippet = 
-                    `# file: .env.local
-NEXT_PUBLIC_FIREBASE_API_KEY="${apiKey}"
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="..."
-# KHÔNG BAO GỒM TỆP NÀY KHI COMMIT LÊN GITHUB!`;
+            // Cập nhật Phase 5
+            if (dynamicData[4] && dynamicData[4].tasks && dynamicData[4].tasks[0]) {
+                dynamicData[4].tasks[0].text = `Đăng nhập Vercel và chọn "Add New Project", sau đó Import Repository từ GitHub (<a href="${repoUrl || '#'}" target="_blank" class="text-indigo-600 underline">${repoUrl || 'Repo đã tạo trực tuyến'}</a>).`;
             }
-
-            dynamicData[4].tasks[0].text = `Đăng nhập Vercel và chọn "Add New Project", sau đó Import Repository từ GitHub (<a href="${repoUrl} " target="_blank" class="text-indigo-500 underline">${repoUrl}</a>).`;
 
             return dynamicData;
         }
 
         function initApp() {
             loadState(); 
+            // Thêm giá trị mặc định cho projectName nếu chưa có
+            projectData.projectName = projectData.projectName || 'sport-manager-online'; 
+
             renderSteps(); 
             
             // GỌI updateSlideContent LẦN ĐẦU TIÊN CHO PHASE 0
