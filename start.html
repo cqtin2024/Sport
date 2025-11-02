@@ -241,7 +241,26 @@ export default function Home() {
   );
 }
                             </pre>
-                            <p class="mt-2 text-xs text-indigo-600 font-semibold">Sau khi tạo xong tất cả 4 files/folders này, Repo đã đủ điều kiện để Vercel nhận diện và Build.</p>
+                            <h4 class="font-bold mt-3 mb-1 text-gray-700">5. src/app/layout.tsx (Cấu trúc HTML chính)</h4>
+                            <pre class="bg-gray-800 text-white p-3 rounded text-sm overflow-x-auto">
+import './globals.css';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
+export const metadata = { title: 'Sport Manager', description: 'App' };
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang="vi">
+      &lt;body className={inter.className}>
+        {children}
+      &lt;/body>
+    &lt;/html>
+  );
+}
+                            </pre>
+                            <p class="mt-2 text-xs text-indigo-600 font-semibold">Sau khi tạo xong tất cả 5 files/folders này, Repo đã đủ điều kiện để Vercel nhận diện và Build.</p>
                         `
                     },
                     { id: 't7_initial_commit', text: 'Commit (Lưu) tất cả các file vừa tạo. Repository đã sẵn sàng! (Vercel sẽ tự động build từ đây).' }
@@ -252,24 +271,102 @@ export default function Home() {
                 title: 'Phase 3: Tích hợp Dịch vụ Google (Firebase)',
                 color: 'bg-yellow-600',
                 tasks: [
-                    { id: 't9_firebase_project', text: 'Tạo một dự án mới trong Firebase Console (đặt tên: ' + (projectData.projectName || 'Tên Dự án của bạn') + ').' },
-                    { id: 't10_web_app', text: 'Thêm một "Web app" vào dự án Firebase và sao chép cấu hình (firebaseConfig).', isInputRequired: true, inputId: 'firebaseApiKey', inputPlaceholder: 'Dán Firebase API Key (để dùng trong Vercel)' },
-                    { id: 't11_install_sdk', text: 'Trong file `package.json` trên GitHub, đảm bảo đã có thư viện `firebase` trong `dependencies` (Đã được cung cấp ở bước T5).', isInputRequired: false },
-                    { id: 't12_init_firebase', text: 'Lưu ý: Mã khởi tạo Firebase sẽ được viết trực tiếp trên GitHub sau khi Deploy thành công lần đầu.', codeSnippet: 
-`// Sau khi Deploy lần 1, bạn sẽ chỉnh sửa file này trực tuyến trên GitHub
-// file: lib/firebase-init.js 
-import { initializeApp } from "firebase/app";
-// Lấy các biến từ môi trường (Vercel)
-const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY, 
-    authDomain: "..."
-    // ...
-};
-export const app = initializeApp(firebaseConfig);
-` 
+                    { 
+                        id: 't9_firebase_project', 
+                        text: 'Tạo một dự án mới trong Firebase Console.',
+                        detail: `
+                            <p class="mb-2">1. Truy cập <a href="https://console.firebase.google.com/" target="_blank" class="text-indigo-600 underline font-semibold" rel="noopener noreferrer">Firebase Console</a> và đăng nhập.</p>
+                            <p class="mb-2">2. Nhấn **Add project** (Thêm dự án).</p>
+                            <p class="mb-2">3. Đặt tên dự án (ví dụ: <span class="font-semibold text-indigo-700">\${projectData.projectName}</span>). Tên này không cần trùng với tên Repo GitHub.</p>
+                            <p class="mb-2">4. Chọn bật hoặc tắt Google Analytics (thường bật cho ứng dụng sản phẩm).</p>
+                            <p class="mb-2">5. Nhấn **Create project**.</p>
+                        `
                     },
-                    { id: 't13_auth', text: 'Trong Firebase: Bật phương thức đăng nhập Google (Authentication -> Sign-in method).' },
-                    { id: 't14_env_online', text: 'Lưu lại tất cả các biến môi trường Firebase để dùng trên Vercel.' }
+                    { 
+                        id: 't10_web_app', 
+                        text: 'Đăng ký Web App và lấy cấu hình (firebaseConfig).', 
+                        isInputRequired: true, 
+                        inputId: 'firebaseApiKey', 
+                        inputPlaceholder: 'Dán Firebase API Key (Chỉ để theo dõi tiến độ)',
+                        detail: `
+                            <p class="mb-2">1. Sau khi dự án tạo xong, chọn biểu tượng **Web &lt;/&gt;** (dưới "Get started by adding an app").</p>
+                            <p class="mb-2">2. Đặt biệt danh cho ứng dụng (ví dụ: Vercel Deploy).</p>
+                            <p class="mb-2">3. Sau khi đăng ký, bạn sẽ thấy một khối code JS chứa đối tượng <code>firebaseConfig</code>.</p>
+                            <p class="mb-2">4. **Sao chép và lưu lại 7 biến sau** (dùng cho bước cài đặt biến môi trường Vercel ở Phase 5):</p>
+                            <ul class="list-disc list-inside ml-4 text-sm font-mono">
+                                <li>apiKey</li>
+                                <li>authDomain</li>
+                                <li>projectId</li>
+                                <li>storageBucket</li>
+                                <li>messagingSenderId</li>
+                                <li>appId</li>
+                                <li>measurementId (Nếu có Analytics)</li>
+                            </ul>
+                            <p class="mt-2 font-semibold text-sm text-indigo-700">Quan trọng: Chỉ cần nhập API Key vào ô trên để ghi nhận bước này. Vẫn phải lưu TẤT CẢ 7 biến bên ngoài.</p>
+                        `
+                    },
+                    { 
+                        id: 't13_auth', 
+                        text: 'Bật phương thức Đăng nhập Google (Authentication).', 
+                        detail: `
+                            <p class="mb-2">1. Trong menu bên trái của Firebase Console, chọn **Authentication**.</p>
+                            <p class="mb-2">2. Chọn tab **Sign-in method**.</p>
+                            <p class="mb-2">3. Tìm mục **Google**, nhấn biểu tượng bút chì để chỉnh sửa.</p>
+                            <p class="mb-2">4. **Bật** (Enable) phương thức này.</p>
+                            <p class="mb-2">5. Thêm Email Hỗ trợ (Support email) và nhấn **Save**.</p>
+                            <p class="mt-2 font-semibold text-red-600">LƯU Ý QUAN TRỌNG: Nếu bạn không bật phương thức này, chức năng đăng nhập Google trong app sẽ không hoạt động!</p>
+                        `
+                    },
+                    { 
+                        id: 't15_firestore_db', 
+                        text: 'Tạo cơ sở dữ liệu Firestore (Database).',
+                        detail: `
+                            <p class="mb-2">1. Trong menu bên trái, chọn **Firestore Database**.</p>
+                            <p class="mb-2">2. Nhấn **Create database**.</p>
+                            <p class="mb-2">3. Chọn **Start in production mode** (chế độ sản xuất) để bảo mật. Nhấn **Next**.</p>
+                            <p class="mb-2">4. Chọn Vị trí lưu trữ dữ liệu (nên chọn gần nơi người dùng của bạn sinh sống, ví dụ: asia-southeast1 (Singapore)). Nhấn **Enable**.</p>
+                        `
+                    },
+                    { 
+                        id: 't16_security_rules', 
+                        text: 'Cấu hình Security Rules cơ bản cho Firestore.',
+                        detail: `
+                            <p class="mb-2">Sau khi Database tạo xong, chọn tab **Rules**.</p>
+                            <p class="mb-2">Thay thế nội dung mặc định bằng rules sau để chỉ cho phép **người dùng đã đăng nhập** đọc và ghi:</p>
+                            <h4 class="font-bold mt-3 mb-1 text-gray-700">Firestore Rules:</h4>
+                            <pre class="bg-gray-800 text-white p-3 rounded text-sm overflow-x-auto">
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Cho phép đọc/ghi nếu người dùng đã xác thực (request.auth != null)
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+                            </pre>
+                            <p class="mt-2 text-sm text-red-600 font-semibold">Nhấn **Publish** (Xuất bản) để lưu Rules. Sau này Dev sẽ cần điều chỉnh chi tiết hơn.</p>
+                        `
+                    },
+                    { 
+                        id: 't14_env_online', 
+                        text: 'Chuẩn bị Bộ Biến Môi trường (NEXT_PUBLIC_...) cho Vercel (Phase 5).',
+                        detail: `
+                            <p class="mb-2">Tạo một ghi chú hoặc file tạm thời để lưu 7 biến cấu hình Firebase dưới dạng biến môi trường của Next.js.</p>
+                            <p class="mb-2"><strong>Quy tắc đặt tên trên Vercel:</strong> Thêm tiền tố <code>NEXT_PUBLIC_FIREBASE_</code> vào tên biến gốc.</p>
+                            <h4 class="font-bold mt-3 mb-1 text-gray-700">Mẫu biến cần lưu:</h4>
+                            <pre class="bg-gray-800 text-white p-3 rounded text-sm overflow-x-auto">
+NEXT_PUBLIC_FIREBASE_API_KEY=[Giá trị apiKey]
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=[Giá trị authDomain]
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=[Giá trị projectId]
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=[Giá trị storageBucket]
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=[Giá trị messagingSenderId]
+NEXT_PUBLIC_FIREBASE_APP_ID=[Giá trị appId]
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=[Giá trị measurementId]
+                            </pre>
+                            <p class="mt-2 font-semibold text-red-600">Những biến này sẽ được dán vào Vercel ở Phase 5.</p>
+                        `
+                    },
                 ]
             },
             {
@@ -277,24 +374,13 @@ export const app = initializeApp(firebaseConfig);
                 title: 'Phase 4: Cấu trúc Database (Firestore) & Code Mẫu',
                 color: 'bg-green-600',
                 tasks: [
-                    { id: 't15_firestore_db', text: 'Tạo cơ sở dữ liệu Firestore trong Firebase Console (chọn mode "Production").' },
-                    { id: 't16_security_rules', text: 'Thiết lập Security Rules cơ bản (chấp nhận read/write cho người dùng đã đăng nhập).', codeSnippet: 
-`// Ví dụ về Firestore Rules (CẦN TÙY CHỈNH THEO BẢO MẬT)
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Chỉ cho phép người dùng đã đăng nhập đọc/ghi
-    match /{document=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}`
-                    },
                     { 
                         id: 't17_data_model', 
-                        text: 'Thiết lập mô hình dữ liệu cơ bản cho App Hội Thao (Collections: Events, Teams, Athletes).',
-                        codeSnippet: 
-`// Mô hình dữ liệu App Hội Thao:
+                        text: 'Tham khảo Mô hình dữ liệu cơ bản cho App Hội Thao.',
+                        detail: `
+                            <p class="mb-2">Dưới đây là mô hình sơ bộ để Dev tiếp tục phát triển. Bạn có thể tự thêm dữ liệu mẫu vào Firestore Console để kiểm tra kết nối ở Phase 5.</p>
+                            <h4 class="font-bold mt-3 mb-1 text-gray-700">Mô hình Dữ liệu:</h4>
+                            <pre class="bg-gray-800 text-white p-3 rounded text-sm overflow-x-auto">
 // 1. Collection: events (Sự kiện)
 //    - Document: event_id_1
 //      - name: "Giải bóng đá mùa xuân 2026"
@@ -311,7 +397,34 @@ service cloud.firestore {
 //      - name: "Nguyễn Văn A"
 //      - teamId: team_id_A
 //      - score: 0
-// `
+// </pre>
+                        `
+                    },
+                    { 
+                        id: 't12_init_firebase_code', 
+                        text: 'Code Mẫu Khởi tạo Firebase trong Next.js (Viết trực tuyến trên GitHub).', 
+                        codeSnippet: 
+`// Tạo file: src/lib/firebase-config.ts (TRỰC TUYẾN TRÊN GITHUB)
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+
+// Sử dụng các biến môi trường mà bạn đã thiết lập trên Vercel ở Phase 5
+const firebaseConfig = {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY, 
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+};
+
+// Khởi tạo và Export các dịch vụ
+export const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+`
                     },
                     { id: 't18_fetch_code', text: 'Viết mã mẫu để fetch dữ liệu Events từ Firestore (Sẽ được code trực tuyến trên GitHub sau khi Deploy).' }
                 ]
@@ -322,7 +435,15 @@ service cloud.firestore {
                 color: 'bg-black',
                 tasks: [
                     { id: 't19_vercel_import', text: 'Đăng nhập Vercel và chọn "Add New Project", sau đó Import Repository từ GitHub (<a href="' + (projectData.githubRepoUrl || '#') + '" target="_blank" class="text-indigo-300 underline">Repo đã tạo trực tuyến</a>).', isInputRequired: true, inputId: 'vercelProjectUrl', inputPlaceholder: 'Dán URL Project Vercel (ví dụ: https://my-app.vercel.app)' },
-                    { id: 't20_env_vercel', text: 'Quan trọng: Dán tất cả các biến môi trường NEXT_PUBLIC_... (lấy từ Phase 3) vào Cấu hình Biến môi trường trên Vercel.' },
+                    { 
+                        id: 't20_env_vercel', 
+                        text: 'Quan trọng: Dán tất cả các biến môi trường (lấy từ Phase 3) vào Cấu hình Biến môi trường trên Vercel.',
+                        detail: `
+                            <p class="mb-2">Trong quá trình Import Project, Vercel sẽ yêu cầu bạn nhập Biến môi trường.</p>
+                            <p class="mb-2">Dán **tất cả 7 biến** đã chuẩn bị ở Phase 3. Đảm bảo chúng có tiền tố <code>NEXT_PUBLIC_</code>.</p>
+                            <p class="mt-2 font-semibold text-red-600">Lưu ý: Nếu quên, bạn có thể vào **Project Settings** -> **Environment Variables** để thêm sau.</p>
+                        `
+                    },
                     { id: 't21_deploy_first', text: 'Nhấn Deploy và chờ đợi lần triển khai đầu tiên thành công (Vercel tự động build).' },
                     { id: 't22_test_cd', text: 'Kiểm tra Continuous Deployment: Thực hiện một thay đổi nhỏ TRỰC TUYẾN trên GitHub. Xem Vercel tự động build và deploy lại.' }
                 ]
@@ -807,16 +928,16 @@ service cloud.firestore {
         function getDynamicStepsData() {
             const dynamicData = JSON.parse(JSON.stringify(stepsData)); 
             
-            const projectName = projectData.projectName || 'Tên Dự án của bạn';
-            // Không còn cần projectName input nữa, nhưng giữ lại cho Phase 3
-            // Dùng tên mặc định nếu chưa có
+            // Thêm giá trị mặc định cho projectName nếu chưa có
             projectData.projectName = projectData.projectName || 'sport-manager-online'; 
             
             const apiKey = projectData.firebaseApiKey || 'Dán KEY đã lưu tại đây';
             const repoUrl = projectData.githubRepoUrl || 'URL Repo đã lưu';
 
-            // Cập nhật Phase 3 dựa trên tên dự án mặc định
-            dynamicData[2].tasks[0].text = `Tạo một dự án mới trong Firebase Console (đặt tên: <span class="text-indigo-600 font-semibold">${projectData.projectName}</span>).`;
+            // Cập nhật Phase 3 dựa trên tên dự án
+            if (dynamicData[2] && dynamicData[2].tasks && dynamicData[2].tasks[0]) {
+                dynamicData[2].tasks[0].detail = dynamicData[2].tasks[0].detail.replace("Tên Dự án của bạn", projectData.projectName);
+            }
             
             // Cập nhật Phase 5
             if (dynamicData[4] && dynamicData[4].tasks && dynamicData[4].tasks[0]) {
