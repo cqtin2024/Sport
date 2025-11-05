@@ -1,0 +1,49 @@
+body {
+  font-family: system-ui, sans-serif;
+  background: #f7f8fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.container {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  width: 400px;
+}
+h1 {
+  margin-bottom: 0.5rem;
+}
+label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: 600;
+}
+input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+button {
+  margin-top: 1.5rem;
+  width: 100%;
+  padding: 12px;
+  background: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+#log {
+  margin-top: 1rem;
+  font-family: monospace;
+  white-space: pre-wrap;
+  background: #f0f0f0;
+  padding: 0.5rem;
+  border-radius: 8px;
+  display: none;
+}
