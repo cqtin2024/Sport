@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quản lý CLB Thể thao</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f8f9fb; color: #333; }
+    header { background: #2a9d8f; color: white; padding: 10px 20px; text-align: center; font-size: 22px; font-weight: 600; }
+    nav { display: flex; background: #264653; color: white; justify-content: space-around; }
+    nav button { flex: 1; padding: 10px; border: none; background: #264653; color: white; cursor: pointer; transition: background 0.3s; }
+    nav button.active, nav button:hover { background: #2a9d8f; }
+    .content { padding: 20px; }
+    .tab { display: none; animation: fadeIn 0.3s; }
+    .tab.active { display: block; }
+    @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 8px 12px; border-bottom: 1px solid #ccc; text-align: left; }
+    th { background: #2a9d8f; color: white; }
+    .add-btn { background: #e9c46a; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <header>🏸 Quản lý Câu lạc bộ Thể thao</header>
+  <nav>
+    <button class="active" onclick="switchTab('members')">Thành viên</button>
+    <button onclick="switchTab('schedule')">Lịch tập</button>
+    <button onclick="switchTab('tournament')">Giải đấu</button>
+    <button onclick="switchTab('finance')">Tài chính</button>
+  </nav>
+
+  <div class="content">
+    <div id="members" class="tab active">
+      <h2>Danh sách thành viên</h2>
+      <table id="membersTable"></table>
+    </div>
+
+    <div id="schedule" class="tab">
+      <h2>Lịch tập</h2>
+      <table id="scheduleTable"></table>
+    </div>
+
+    <div id="tournament" class="tab">
+      <h2>Giải đấu</h2>
+      <table id="tournamentTable"></table>
+    </div>
+
+    <div id="finance" class="tab">
+      <h2>Tài chính</h2>
+      <table id="financeTable"></table>
+      <p><b>Tổng quỹ hiện tại:</b> <span id="balance"></span>đ</p>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    async function loadData() {
+      try {
+        const res = await fetch('data/db.json');
+        const data = await res.json();
+        renderMembers(data.members);
+        renderSchedule(data.schedule);
+        renderTournaments(data.tournaments);
+        renderFinance(data.finance);
+      } catch (e) {
+        console.error("Lỗi tải dữ liệu:", e);
+        document.querySelector('.content').innerHTML = "<p style='color:red;'>Không thể tải dữ liệu từ db.json</p>";
+      }
+    }
+
+    function renderMembers(members) {
+      const table = document.getElementById('membersTable');
+      table.innerHTML = "<tr><th>Tên</th><th>Vai trò</th><th>Tham gia từ</th></tr>" +
+        members.map(m => `<tr><td>${m.name}</td><td>${m.role}</td><td>${m.joined}</td></tr>`).join('');
+    }
+
+    function renderSchedule(list) {
+      const table = document.getElementById('scheduleTable');
+      table.innerHTML = "<tr><th>Ngày</th><th>Giờ</th><th>Địa điểm</th></tr>" +
+        list.map(i => `<tr><td>${i.day}</td><td>${i.time}</td><td>${i.location}</td></tr>`).join('');
+    }
+
+    function renderTournaments(list) {
+      const table = document.getElementById('tournamentTable');
+      table.innerHTML = "<tr><th>Tên giải</th><th>Ngày tổ chức</th><th>Trạng thái</th></tr>" +
+        list.map(t => `<tr><td>${t.name}</td><td>${t.date}</td><td>${t.status}</td></tr>`).join('');
+    }
+
+    function renderFinance(finance) {
+      const table = document.getElementById('financeTable');
+      table.innerHTML = "<tr><th>Loại</th><th>Số tiền</th><th>Ngày</th></tr>" +
+        finance.records.map(r => `<tr><td>${r.type}</td><td>${r.amount.toLocaleString()}</td><td>${r.date}</td></tr>`).join('');
+      document.getElementById('balance').innerText = finance.balance.toLocaleString();
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
