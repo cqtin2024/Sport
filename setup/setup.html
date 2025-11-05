@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SportClub Setup Assistant</title>
+  <link rel="stylesheet" href="setup.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>⚙️ SportClub Web Setup Assistant</h1>
+    <p>Điền thông tin để khởi tạo cấu hình và dữ liệu dự án</p>
+
+    <form id="setupForm">
+      <label>🔑 GitHub Token</label>
+      <input type="password" id="ghToken" required placeholder="ghp_xxxxxx" />
+
+      <label>📂 Tên repo GitHub (vd: username/sportclub-data)</label>
+      <input type="text" id="ghRepo" required />
+
+      <label>🌐 Firebase Database URL</label>
+      <input type="text" id="fbUrl" required placeholder="https://xxx.firebaseio.com" />
+
+      <label>🔒 Firebase Secret Key</label>
+      <input type="password" id="fbSecret" required />
+
+      <label>📦 Vercel Project Name</label>
+      <input type="text" id="vercelProject" required />
+
+      <button type="submit">🚀 Thiết lập tự động</button>
+    </form>
+
+    <div id="log"></div>
+  </div>
+
+  <script src="setup.js"></script>
+</body>
+</html>
