@@ -1,0 +1,24 @@
+body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f8f9fb; color: #333; }
+header { background: #2a9d8f; color: white; padding: 10px 20px; text-align: center; font-size: 22px; font-weight: 600; }
+nav { display: flex; background: #264653; justify-content: space-around; }
+nav button { flex: 1; padding: 10px; border: none; background: #264653; color: white; cursor: pointer; }
+nav button.active, nav button:hover { background: #2a9d8f; }
+.content { padding: 20px; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { padding: 8px 12px; border-bottom: 1px solid #ccc; text-align: left; }
+th { background: #2a9d8f; color: white; }
+tr:hover { background: #eaf2ef; cursor: pointer; }
+.btn { padding: 6px 10px; border: none; border-radius: 6px; cursor: pointer; }
+.btn-add { background: #e9c46a; }
+.btn-del { background: #e76f51; color: white; }
+.modal {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  justify-content: center; align-items: center;
+}
+.modal-content {
+  background: white; padding: 20px; border-radius: 10px; width: 400px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+.modal-content input, textarea {
+  width: 100%; padding: 6px; margin: 6px 0; border: 1px solid #ccc; border-radius: 4px;
+}
