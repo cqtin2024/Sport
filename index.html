@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quản lý CLB Thể thao</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>🏸 Quản lý Câu lạc bộ Thể thao</header>
+  <nav>
+    <button class="active" onclick="switchTab('members')">Thành viên</button>
+    <button onclick="switchTab('schedule')">Lịch tập</button>
+    <button onclick="switchTab('tournaments')">Giải đấu</button>
+    <button onclick="switchTab('finance')">Tài chính</button>
+  </nav>
+
+  <div class="content">
+    <div id="members" class="tab active">
+      <h2>Thành viên <button class="btn btn-add" onclick="openMemberModal()">+ Thêm</button></h2>
+      <table id="membersTable"></table>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="memberModal" class="modal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Chi tiết thành viên</h3>
+      <input id="m_name" placeholder="Tên">
+      <input id="m_role" placeholder="Vai trò">
+      <input id="m_joined" placeholder="Ngày tham gia">
+      <input id="m_email" placeholder="Email">
+      <input id="m_phone" placeholder="SĐT">
+      <input id="m_level" placeholder="Cấp độ">
+      <input id="m_sessions" type="number" placeholder="Số buổi">
+      <textarea id="m_note" placeholder="Ghi chú"></textarea>
+      <button class="btn" onclick="saveMember()">💾 Lưu</button>
+      <button class="btn btn-del" onclick="deleteMember()">🗑 Xóa</button>
+      <button class="btn" onclick="closeModal()">Đóng</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
