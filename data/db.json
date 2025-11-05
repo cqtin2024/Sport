@@ -1,21 +1,29 @@
 {
   "members": [
-    { "name": "Nguyễn Văn A", "role": "Thành viên", "joined": "01/2024" },
-    { "name": "Trần Thị B", "role": "Huấn luyện viên", "joined": "03/2023" }
+    {
+      "id": 1,
+      "name": "Nguyễn Văn A",
+      "role": "Thành viên",
+      "joined": "01/2024",
+      "email": "vana@example.com",
+      "phone": "0912345678",
+      "level": "Trung bình",
+      "sessions": 25,
+      "note": "Rất tích cực tham gia các giải nội bộ."
+    },
+    {
+      "id": 2,
+      "name": "Trần Thị B",
+      "role": "Huấn luyện viên",
+      "joined": "03/2023",
+      "email": "tranb@example.com",
+      "phone": "0987654321",
+      "level": "Chuyên nghiệp",
+      "sessions": 120,
+      "note": "HLV chính, phụ trách đào tạo nhóm nâng cao."
+    }
   ],
-  "schedule": [
-    { "day": "Thứ 3", "time": "18:00 - 20:00", "location": "Nhà thi đấu A" },
-    { "day": "Thứ 7", "time": "16:00 - 18:00", "location": "Sân B" }
-  ],
-  "tournaments": [
-    { "name": "CLB Cup 2024", "date": "20/12/2024", "status": "Đã hoàn thành" },
-    { "name": "Spring Tournament", "date": "15/03/2025", "status": "Sắp diễn ra" }
-  ],
-  "finance": {
-    "records": [
-      { "type": "Phí thành viên", "amount": 500000, "date": "10/10/2024" },
-      { "type": "Mua bóng", "amount": -200000, "date": "18/10/2024" }
-    ],
-    "balance": 300000
-  }
+  "schedule": [],
+  "tournaments": [],
+  "finance": { "records": [], "balance": 0 }
 }
