@@ -17,6 +17,13 @@
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { padding: 8px 12px; border-bottom: 1px solid #ccc; text-align: left; }
     th { background: #2a9d8f; color: white; }
+    tr:hover { background: #eaf2ef; cursor: pointer; }
+    .member-detail {
+      margin-top: 15px; padding: 15px;
+      background: #e9f5f3; border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .member-detail h3 { margin-top: 0; color: #264653; }
     .add-btn { background: #e9c46a; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-top: 8px; }
   </style>
 </head>
@@ -33,6 +40,7 @@
     <div id="members" class="tab active">
       <h2>Danh sách thành viên</h2>
       <table id="membersTable"></table>
+      <div id="memberDetail"></div>
     </div>
 
     <div id="schedule" class="tab">
@@ -53,6 +61,8 @@
   </div>
 
   <script>
+    let clubData = {};
+
     function switchTab(tabId) {
       document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
       document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
@@ -63,11 +73,11 @@
     async function loadData() {
       try {
         const res = await fetch('data/db.json');
-        const data = await res.json();
-        renderMembers(data.members);
-        renderSchedule(data.schedule);
-        renderTournaments(data.tournaments);
-        renderFinance(data.finance);
+        clubData = await res.json();
+        renderMembers(clubData.members);
+        renderSchedule(clubData.schedule);
+        renderTournaments(clubData.tournaments);
+        renderFinance(clubData.finance);
       } catch (e) {
         console.error("Lỗi tải dữ liệu:", e);
         document.querySelector('.content').innerHTML = "<p style='color:red;'>Không thể tải dữ liệu từ db.json</p>";
@@ -77,7 +87,29 @@
     function renderMembers(members) {
       const table = document.getElementById('membersTable');
       table.innerHTML = "<tr><th>Tên</th><th>Vai trò</th><th>Tham gia từ</th></tr>" +
-        members.map(m => `<tr><td>${m.name}</td><td>${m.role}</td><td>${m.joined}</td></tr>`).join('');
+        members.map(m => 
+          `<tr onclick="showMemberDetail(${m.id})"><td style='color:#2a9d8f;font-weight:600;'>${m.name}</td><td>${m.role}</td><td>${m.joined}</td></tr>`
+        ).join('');
+    }
+
+    function showMemberDetail(id) {
+      const member = clubData.members.find(m => m.id === id);
+      if (!member) return;
+
+      const box = document.getElementById('memberDetail');
+      box.innerHTML = `
+        <div class="member-detail">
+          <h3>Thông tin chi tiết</h3>
+          <p><b>Tên:</b> ${member.name}</p>
+          <p><b>Vai trò:</b> ${member.role}</p>
+          <p><b>Email:</b> ${member.email}</p>
+          <p><b>Điện thoại:</b> ${member.phone}</p>
+          <p><b>Cấp độ:</b> ${member.level}</p>
+          <p><b>Số buổi tham gia:</b> ${member.sessions}</p>
+          <p><b>Ghi chú:</b> ${member.note}</p>
+        </div>
+      `;
+      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function renderSchedule(list) {
